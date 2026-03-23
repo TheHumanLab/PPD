@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Personal Positioning Diagnostic — The Human Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── TOKENS ─────────────────────────────────────────── */
+    :root {
+      --white:      #ffffff;
+      --off-white:  #f7f6f4;
+      --rule:       #e2e0db;
+      --text-dim:   #8a8680;
+      --text-body:  #3a3835;
+      --text-head:  #181714;
+      --gold:       #b59a6a;
+      --gold-light: #d4bc96;
+      --charcoal:   #2c2b29;
+
+      --font-display: 'EB Garamond', Georgia, serif;
+      --font-body:    'DM Sans', sans-serif;
+
+      --max:  1080px;
+      --col:  clamp(1.5rem, 5vw, 5rem);
+    }
+
+    /* ─── RESET ──────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--white);
+      color: var(--text-body);
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+    img { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ─── LAYOUT HELPERS ─────────────────────────────────── */
+    .wrap {
+      max-width: var(--max);
+      margin-inline: auto;
+      padding-inline: var(--col);
+    }
+    .rule { border: none; border-top: 1px solid var(--rule); }
+
+    /* ─── TYPOGRAPHY ─────────────────────────────────────── */
+    .display {
+      font-family: var(--font-display);
+      font-weight: 400;
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+      color: var(--text-head);
+    }
+    .label {
+      font-family: var(--font-body);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    /* ─── BUTTON ─────────────────────────────────────────── */
+    .btn {
+      display: inline-block;
+      padding: 0.875rem 2.25rem;
+      background: var(--charcoal);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border: 1px solid var(--charcoal);
+      cursor: pointer;
+      transition: background 0.22s, color 0.22s;
+
+      /* ── EDIT: paste your Stripe payment link here ── */
+      /* href="https://buy.stripe.com/8x2aEYeWH0Kj3cXc6m3oA03" */
+    }
+    .btn:hover {
+      background: transparent;
+      color: var(--charcoal);
+    }
+    .btn--outline {
+      background: transparent;
+      color: var(--charcoal);
+    }
+    .btn--outline:hover {
+      background: var(--charcoal);
+      color: var(--white);
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       SECTION 1 — HEADER / HERO
+    ═══════════════════════════════════════════════════════ */
+    .hero {
+      padding: 5.5rem 0 6rem;
+      border-bottom: 1px solid var(--rule);
+    }
+    .hero__wordmark {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      margin-bottom: 4.5rem;
+    }
+    .hero__wordmark-line {
+      width: 2.5rem;
+      height: 1px;
+      background: var(--gold);
+    }
+    .hero__wordmark-text {
+      font-family: var(--font-body);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+    .hero__eyebrow {
+      margin-bottom: 1.25rem;
+    }
+    .hero__title {
+      font-size: clamp(2.6rem, 6vw, 4.25rem);
+      max-width: 17ch;
+      margin-bottom: 1.75rem;
+    }
+    .hero__title em {
+      font-style: italic;
+      color: var(--gold);
+    }
+    .hero__body {
+      max-width: 52ch;
+      font-size: 1.0625rem;
+      color: var(--text-body);
+      margin-bottom: 2.5rem;
+      line-height: 1.75;
+    }
+    .hero__meta {
+      margin-top: 2rem;
+      font-size: 0.8125rem;
+      color: var(--text-dim);
+      letter-spacing: 0.04em;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       SECTION 2 — THE PROBLEM
+    ═══════════════════════════════════════════════════════ */
+    .problem {
+      padding: 6rem 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .problem__grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: start;
+    }
+    .problem__left .label { margin-bottom: 1.5rem; }
+    .problem__title {
+      font-size: clamp(1.85rem, 3.5vw, 2.6rem);
+      max-width: 20ch;
+    }
+    .problem__right {
+      padding-top: 0.25rem;
+    }
+    .problem__list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+    .problem__item {
+      display: grid;
+      grid-template-columns: 2rem 1fr;
+      gap: 1rem;
+      align-items: start;
+    }
+    .problem__num {
+      font-family: var(--font-display);
+      font-size: 0.9375rem;
+      color: var(--gold);
+      padding-top: 0.1rem;
+    }
+    .problem__text {
+      font-size: 0.9375rem;
+      line-height: 1.65;
+      color: var(--text-body);
+    }
+    .problem__text strong {
+      color: var(--text-head);
+      font-weight: 500;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       SECTION 3 — WHAT YOU GET
+    ═══════════════════════════════════════════════════════ */
+    .deliverables {
+      padding: 6rem 0;
+      background: var(--off-white);
+      border-bottom: 1px solid var(--rule);
+    }
+    .deliverables__inner {
+      display: grid;
+      grid-template-columns: 1fr 1.35fr;
+      gap: 5rem;
+      align-items: start;
+    }
+    .deliverables__left .label { margin-bottom: 1.5rem; }
+    .deliverables__title {
+      font-size: clamp(1.75rem, 3vw, 2.4rem);
+      max-width: 18ch;
+    }
+    .deliverables__intro {
+      margin-top: 1.25rem;
+      font-size: 0.9375rem;
+      color: var(--text-dim);
+      max-width: 30ch;
+    }
+    .deliverables__items {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .deliverable-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.25rem;
+      padding: 1.35rem 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .deliverable-row:first-child { border-top: 1px solid var(--rule); }
+    .deliverable-icon {
+      width: 1.75rem;
+      height: 1.75rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .deliverable-icon svg { width: 14px; height: 14px; }
+    .deliverable-body strong {
+      display: block;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--text-head);
+      margin-bottom: 0.2rem;
+    }
+    .deliverable-body span {
+      font-size: 0.875rem;
+      color: var(--text-dim);
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       SECTION 4 — HOW IT WORKS
+    ═══════════════════════════════════════════════════════ */
+    .process {
+      padding: 6rem 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .process__header { margin-bottom: 4rem; }
+    .process__header .label { margin-bottom: 1.25rem; }
+    .process__title { font-size: clamp(1.75rem, 3vw, 2.4rem); }
+    .process__steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+    }
+    .process__step {
+      padding: 2.5rem 2.5rem 2.5rem 0;
+      border-right: 1px solid var(--rule);
+      padding-right: 2.5rem;
+    }
+    .process__step:last-child { border-right: none; padding-right: 0; }
+    .process__step:not(:first-child) { padding-left: 2.5rem; }
+    .process__step-num {
+      font-family: var(--font-display);
+      font-size: 3rem;
+      color: var(--rule);
+      line-height: 1;
+      margin-bottom: 1.25rem;
+    }
+    .process__step-title {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text-head);
+      margin-bottom: 0.5rem;
+    }
+    .process__step-body {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      line-height: 1.65;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       SECTION 5 — PRICE
+    ═══════════════════════════════════════════════════════ */
+    .price {
+      padding: 6.5rem 0;
+      border-bottom: 1px solid var(--rule);
+      text-align: center;
+    }
+    .price .label { margin-bottom: 1.5rem; }
+    .price__amount {
+      font-family: var(--font-display);
+      font-size: clamp(4rem, 10vw, 7rem);
+      font-weight: 400;
+      color: var(--text-head);
+      line-height: 1;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+    .price__amount sup {
+      font-size: 0.4em;
+      vertical-align: super;
+      color: var(--gold);
+    }
+    .price__tagline {
+      font-size: 0.875rem;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+      margin-bottom: 2.5rem;
+    }
+    .price__tagline span { margin: 0 0.4rem; color: var(--rule); }
+
+    /* ═══════════════════════════════════════════════════════
+       SECTION 6 — DELIVERY / REPORT
+    ═══════════════════════════════════════════════════════ */
+    .report {
+      padding: 6rem 0;
+      background: var(--charcoal);
+      border-bottom: 1px solid #3c3b38;
+    }
+    .report .label { color: var(--gold-light); margin-bottom: 1.5rem; }
+    .report__inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+    .report__title {
+      color: var(--white);
+      font-size: clamp(1.75rem, 3vw, 2.5rem);
+    }
+    .report__body {
+      font-size: 0.9375rem;
+      color: rgba(255,255,255,0.6);
+      margin-top: 1rem;
+      max-width: 34ch;
+    }
+    .report__items {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .report__item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.1rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.85);
+      font-size: 0.9375rem;
+    }
+    .report__item:first-child { border-top: 1px solid rgba(255,255,255,0.08); }
+    .report__bullet {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--gold);
+      flex-shrink: 0;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       SECTION 7 — FAQ
+    ═══════════════════════════════════════════════════════ */
+    .faq {
+      padding: 6rem 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .faq__header { margin-bottom: 3.5rem; }
+    .faq__header .label { margin-bottom: 1rem; }
+    .faq__title { font-size: clamp(1.6rem, 2.8vw, 2.2rem); }
+    .faq__grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem 5rem;
+    }
+    .faq__item {}
+    .faq__q {
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--text-head);
+      margin-bottom: 0.5rem;
+    }
+    .faq__a {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      line-height: 1.65;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       SECTION 8 — FINAL CTA
+    ═══════════════════════════════════════════════════════ */
+    .cta {
+      padding: 7rem 0;
+      text-align: center;
+      border-bottom: 1px solid var(--rule);
+    }
+    .cta .label { margin-bottom: 1.5rem; }
+    .cta__title {
+      font-size: clamp(2rem, 4.5vw, 3.25rem);
+      max-width: 24ch;
+      margin-inline: auto;
+      margin-bottom: 2.5rem;
+    }
+    .cta__sub {
+      font-size: 0.875rem;
+      color: var(--text-dim);
+      margin-top: 1.25rem;
+      letter-spacing: 0.04em;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════════════════ */
+    .footer {
+      padding: 3rem 0;
+    }
+    .footer__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .footer__brand {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-head);
+    }
+    .footer__sub {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+    }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────── */
+    @media (max-width: 800px) {
+      .problem__grid,
+      .deliverables__inner,
+      .report__inner,
+      .process__steps,
+      .faq__grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+      .process__step {
+        border-right: none;
+        border-bottom: 1px solid var(--rule);
+        padding: 2rem 0;
+      }
+      .process__step:last-child { border-bottom: none; }
+      .process__step:not(:first-child) { padding-left: 0; }
+      .footer__inner { flex-direction: column; align-items: flex-start; gap: 0.25rem; }
+    }
+
+    /* ─── SUBTLE ENTRANCE ANIMATION ─────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .hero__eyebrow { animation: fadeUp 0.6s ease both; }
+    .hero__title   { animation: fadeUp 0.6s 0.1s ease both; }
+    .hero__body    { animation: fadeUp 0.6s 0.2s ease both; }
+    .hero .btn     { animation: fadeUp 0.6s 0.3s ease both; }
+    .hero__meta    { animation: fadeUp 0.6s 0.4s ease both; }
+  </style>
+</head>
+<body>
+
+<!-- ═══ SECTION 1 — HERO ═══════════════════════════════════ -->
+<section class="hero">
+  <div class="wrap">
+
+    <div class="hero__wordmark">
+      <span class="hero__wordmark-line"></span>
+      <span class="hero__wordmark-text">The Human Lab</span>
+    </div>
+
+    <p class="label hero__eyebrow">Personal Positioning Diagnostic</p>
+
+    <h1 class="display hero__title">
+      You are more valuable than<br>
+      <em>the market currently believes.</em>
+    </h1>
+
+    <p class="hero__body">
+      Most capable people are overlooked because they are poorly positioned, not because they lack ability. This diagnostic identifies exactly how you should present yourself so the right opportunities recognise your value.
+    </p>
+
+    <!-- ── EDIT: replace href with your Stripe payment link ── -->
+    <a class="btn" href="https://buy.stripe.com/8x2aEYeWH0Kj3cXc6m3oA03" target="_blank" rel="noopener">
+      Start Your Diagnostic
+    </a>
+
+    <p class="hero__meta">Fixed price &nbsp;·&nbsp; No subscription &nbsp;·&nbsp; Delivered within 3–5 days</p>
+
+  </div>
+</section>
+
+
+<!-- ═══ SECTION 2 — THE PROBLEM ════════════════════════════ -->
+<section class="problem">
+  <div class="wrap">
+    <div class="problem__grid">
+
+      <div class="problem__left">
+        <p class="label">The problem</p>
+        <h2 class="display problem__title">Why most professionals stay overlooked</h2>
+      </div>
+
+      <div class="problem__right">
+        <ul class="problem__list">
+          <li class="problem__item">
+            <span class="problem__num">01</span>
+            <p class="problem__text"><strong>They are too general.</strong> When you try to appeal to everyone, you signal value to no one. The market rewards specificity.</p>
+          </li>
+          <li class="problem__item">
+            <span class="problem__num">02</span>
+            <p class="problem__text"><strong>Their strengths are invisible.</strong> Real capability is often buried in vague language, unclear titles, and generic descriptions.</p>
+          </li>
+          <li class="problem__item">
+            <span class="problem__num">03</span>
+            <p class="problem__text"><strong>Their positioning is weak.</strong> Positioning is not what you do — it is what you mean to the people who can open doors for you.</p>
+          </li>
+          <li class="problem__item">
+            <span class="problem__num">04</span>
+            <p class="problem__text"><strong>They don't communicate real value.</strong> Most professionals describe their history, not their impact. The distinction costs them opportunities every week.</p>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ SECTION 3 — WHAT YOU GET ═══════════════════════════ -->
+<section class="deliverables">
+  <div class="wrap">
+    <div class="deliverables__inner">
+
+      <div class="deliverables__left">
+        <p class="label">What you receive</p>
+        <h2 class="display deliverables__title">What your report includes</h2>
+        <p class="deliverables__intro">A structured analysis designed to make your value legible to the right audience.</p>
+      </div>
+
+      <div class="deliverables__items">
+
+        <div class="deliverable-row">
+          <div class="deliverable-icon">
+            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="7" cy="7" r="3" fill="#b59a6a"/>
+            </svg>
+          </div>
+          <div class="deliverable-body">
+            <strong>Personal positioning analysis</strong>
+            <span>A clear-eyed assessment of how you currently sit in the market and where you should sit.</span>
+          </div>
+        </div>
+
+        <div class="deliverable-row">
+          <div class="deliverable-icon">
+            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="7" cy="7" r="3" fill="#b59a6a"/>
+            </svg>
+          </div>
+          <div class="deliverable-body">
+            <strong>Strength translation into market language</strong>
+            <span>Your real capabilities reframed in the terms that decision-makers and opportunities respond to.</span>
+          </div>
+        </div>
+
+        <div class="deliverable-row">
+          <div class="deliverable-icon">
+            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="7" cy="7" r="3" fill="#b59a6a"/>
+            </svg>
+          </div>
+          <div class="deliverable-body">
+            <strong>Messaging clarity recommendations</strong>
+            <span>Specific guidance on how to communicate what you do and why it matters — simply and credibly.</span>
+          </div>
+        </div>
+
+        <div class="deliverable-row">
+          <div class="deliverable-icon">
+            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="7" cy="7" r="3" fill="#b59a6a"/>
+            </svg>
+          </div>
+          <div class="deliverable-body">
+            <strong>Professional differentiation angles</strong>
+            <span>The specific angles that distinguish you from others with similar experience or titles.</span>
+          </div>
+        </div>
+
+        <div class="deliverable-row">
+          <div class="deliverable-icon">
+            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="7" cy="7" r="3" fill="#b59a6a"/>
+            </svg>
+          </div>
+          <div class="deliverable-body">
+            <strong>3 practical positioning improvements</strong>
+            <span>Concrete, actionable changes you can make immediately to shift how the market perceives you.</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ SECTION 4 — HOW IT WORKS ═══════════════════════════ -->
+<section class="process">
+  <div class="wrap">
+
+    <div class="process__header">
+      <p class="label">The process</p>
+      <h2 class="display process__title">Simple. Three steps.</h2>
+    </div>
+
+    <div class="process__steps">
+
+      <div class="process__step">
+        <div class="process__step-num">01</div>
+        <p class="process__step-title">Purchase the diagnostic</p>
+        <p class="process__step-body">A single fixed payment. No negotiation, no discovery call required. You are in immediately.</p>
+      </div>
+
+      <div class="process__step">
+        <div class="process__step-num">02</div>
+        <p class="process__step-title">Complete the intake questionnaire</p>
+        <p class="process__step-body">A short structured questionnaire sent to you after payment. Designed to surface what matters, quickly.</p>
+      </div>
+
+      <div class="process__step">
+        <div class="process__step-num">03</div>
+        <p class="process__step-title">Receive your personalised report</p>
+        <p class="process__step-body">Your full positioning report delivered as a structured PDF within 3–5 working days.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ SECTION 5 — PRICE ═══════════════════════════════════ -->
+<section class="price">
+  <div class="wrap">
+    <p class="label">Diagnostic investment</p>
+    <div class="price__amount"><sup>$</sup>95</div>
+    <p class="price__tagline">
+      Fixed price <span>·</span> No subscription <span>·</span> No upsells
+    </p>
+    <!-- ── EDIT: replace href with your Stripe payment link ── -->
+    <a class="btn" href="https://buy.stripe.com/8x2aEYeWH0Kj3cXc6m3oA03" target="_blank" rel="noopener">
+      Start Your Diagnostic
+    </a>
+  </div>
+</section>
+
+
+<!-- ═══ SECTION 6 — DELIVERY ════════════════════════════════ -->
+<section class="report">
+  <div class="wrap">
+    <div class="report__inner">
+
+      <div>
+        <p class="label">What you receive</p>
+        <h2 class="display report__title">Your report. Structured. Specific. Actionable.</h2>
+        <p class="report__body">A structured PDF report built around your actual background — not a generic template.</p>
+      </div>
+
+      <div class="report__items">
+        <div class="report__item">
+          <span class="report__bullet"></span>
+          Your positioning analysis
+        </div>
+        <div class="report__item">
+          <span class="report__bullet"></span>
+          Your differentiation angle
+        </div>
+        <div class="report__item">
+          <span class="report__bullet"></span>
+          Messaging improvements
+        </div>
+        <div class="report__item">
+          <span class="report__bullet"></span>
+          Recommended next moves
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ SECTION 7 — FAQ ═════════════════════════════════════ -->
+<section class="faq">
+  <div class="wrap">
+
+    <div class="faq__header">
+      <p class="label">Common questions</p>
+      <h2 class="display faq__title">What you might be wondering</h2>
+    </div>
+
+    <div class="faq__grid">
+
+      <div class="faq__item">
+        <p class="faq__q">Who is this for?</p>
+        <p class="faq__a">Professionals, founders, consultants, and subject-matter experts who suspect their positioning is holding them back — even though their capability is not.</p>
+      </div>
+
+      <div class="faq__item">
+        <p class="faq__q">How long does it take?</p>
+        <p class="faq__a">You receive your report within 3–5 working days of completing the intake questionnaire.</p>
+      </div>
+
+      <div class="faq__item">
+        <p class="faq__q">Is this coaching?</p>
+        <p class="faq__a">No. This is a structured written analysis — not a coaching programme, not a series of calls. You receive a clear, practical report.</p>
+      </div>
+
+      <div class="faq__item">
+        <p class="faq__q">What if my situation is unusual?</p>
+        <p class="faq__a">The questionnaire is designed to capture nuance. Non-linear careers, career transitions, and hybrid roles are common — and often produce the most interesting positioning work.</p>
+      </div>
+
+      <div class="faq__item">
+        <p class="faq__q">Will this tell me what job to do?</p>
+        <p class="faq__a">No. This diagnostic focuses on positioning — how to present yourself in your chosen direction, not on deciding the direction itself.</p>
+      </div>
+
+      <div class="faq__item">
+        <p class="faq__q">How do I receive the report?</p>
+        <p class="faq__a">Your report is delivered as a PDF to the email address you provide. No platform, no portal, no login required.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ SECTION 8 — FINAL CTA ══════════════════════════════ -->
+<section class="cta">
+  <div class="wrap">
+    <p class="label">Get started</p>
+    <h2 class="display cta__title">Get clarity on how you should position yourself.</h2>
+    <!-- ── EDIT: replace href with your Stripe payment link ── -->
+    <a class="btn" href="https://buy.stripe.com/8x2aEYeWH0Kj3cXc6m3oA03" target="_blank" rel="noopener">
+      Start Your Diagnostic
+    </a>
+    <p class="cta__sub">$95 &nbsp;·&nbsp; Delivered in 3–5 days &nbsp;·&nbsp; No calls required</p>
+  </div>
+</section>
+
+
+<!-- ═══ FOOTER ══════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__inner">
+      <span class="footer__brand">The Human Lab</span>
+      <span class="footer__sub">Personal Structural Intelligence Services</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
